@@ -3,6 +3,7 @@ workflows:
     name: iOS Release Build
     max_build_duration: 60
     instance_type: mac_mini_m1
+    working_directory: flutter_emaam
     environment:
       flutter: stable
       xcode: latest
@@ -26,18 +27,16 @@ workflows:
           keychain add-certificates
       - name: Install dependencies
         script: |
-          cd flutter_emaam
           flutter packages pub get
           cd ios && pod install
       - name: Flutter build ipa
         script: |
-          cd flutter_emaam
           flutter build ipa --release \
             --build-name=1.0.3 \
             --build-number=4 \
             --export-options-plist=$HOME/export_options.plist
     artifacts:
-      - flutter_emaam/build/ios/ipa/*.ipa
+      - build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
         auth: integration
@@ -47,6 +46,7 @@ workflows:
     name: Android Release Build
     max_build_duration: 30
     instance_type: mac_mini_m1
+    working_directory: flutter_emaam
     environment:
       flutter: stable
       groups:
@@ -61,16 +61,14 @@ workflows:
     scripts:
       - name: Install dependencies
         script: |
-          cd flutter_emaam
           flutter packages pub get
       - name: Flutter build aab
         script: |
-          cd flutter_emaam
           flutter build appbundle --release \
             --build-name=1.0.3 \
             --build-number=4
     artifacts:
-      - flutter_emaam/build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/bundle/release/*.aab
     publishing:
       google_play:
         credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
