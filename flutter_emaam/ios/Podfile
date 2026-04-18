@@ -3,7 +3,6 @@
 flutter_root = ENV['FLUTTER_ROOT'] || File.join('..', '..', '..')
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
-prepare_command 'ruby -e "require \'fileutils\'; FileUtils.touch(\'Flutter/Generated.xcconfig\')"'
 
 platform :ios, '15.0'
 
