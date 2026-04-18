@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "490328842174",
+    "project_id": "emaam-digitalbow",
+    "storage_bucket": "emaam-digitalbow.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490328842174:android:006dc4fd6a833a608a63ef",
+        "android_client_info": {
+          "package_name": "com.digitalbow.emaam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeWvfKA1vB2MaI6MrZgZBMED3S29FWvWE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

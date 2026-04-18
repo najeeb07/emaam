@@ -1,0 +1,136 @@
+/* ========== CUSTOM DROPDOWN ========== */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Override .form-container button styles for the toggle */
+.form-container .custom-dropdown .dropdown-toggle {
+    width: 100%;
+    padding: 13px 14px;
+    border: 2px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    /* Override gradient */
+    color: var(--text-color);
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition-normal);
+    box-shadow: none;
+    margin-right: 0;
+}
+
+.form-container .custom-dropdown .dropdown-toggle:hover {
+    transform: none;
+    /* Disable lift effect */
+    border-color: var(--input-border);
+    /* Keep border unless active */
+}
+
+.form-container .custom-dropdown .dropdown-toggle:after {
+    content: '\25BC';
+    /* Down arrow */
+    font-size: 10px;
+    color: var(--muted-text);
+    margin-left: 10px;
+    transition: transform 0.2s;
+}
+
+.form-container .custom-dropdown .dropdown-toggle.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(188, 140, 44, 0.1);
+}
+
+.form-container .custom-dropdown .dropdown-toggle.active:after {
+    transform: rotate(180deg);
+}
+
+.form-container .custom-dropdown .dropdown-toggle:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+    color: var(--muted-text);
+    border-color: var(--input-border);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    transition: all 0.2s ease-out;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.dropdown-menu.active {
+    max-height: 300px;
+    opacity: 1;
+    visibility: visible;
+    overflow-y: auto;
+    border-color: var(--primary-color);
+}
+
+.dropdown-list {
+    padding: 5px;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s;
+    margin-bottom: 2px;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(188, 140, 44, 0.08);
+}
+
+.dropdown-item.selected {
+    background-color: rgba(188, 140, 44, 0.15);
+}
+
+.dropdown-item input[type="checkbox"] {
+    margin: 0 10px 0 0 !important;
+    width: 16px !important;
+    height: 16px !important;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.dropdown-item label {
+    cursor: pointer;
+    margin-bottom: 0 !important;
+    font-weight: 500 !important;
+    color: var(--text-color);
+    flex: 1;
+    font-size: 14px;
+    user-select: none;
+}
+
+.dropdown-item.no-items {
+    padding: 15px;
+    text-align: center;
+    color: var(--muted-text);
+    cursor: default;
+    justify-content: center;
+}
+
+.dropdown-item.no-items:hover {
+    background-color: transparent;
+}

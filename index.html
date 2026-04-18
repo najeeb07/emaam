@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <img src="img/logo.png" alt="Company Logo" class="login-logo">
+            <h2>Admin Login</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit">Login</button>
+                <p class="error-message" id="login-error-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="dashboard-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="img/logo.png" alt="Company Logo" class="dashboard-logo">
+                <h1>Admin Dashboard</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" id="nav-dashboard" class="active">Dashboard</a></li>
+                    <li><a href="#" id="nav-properties">Properties</a></li>
+                    <li><a href="#" id="nav-agents">Agents</a></li>
+                    <li><a href="#" id="nav-clients">Clients</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header>
+                <h2 id="current-page-title">Dashboard</h2>
+                <div class="user-info">
+                    <span>Admin User</span>
+                    <button id="logout-button">Logout</button>
+                </div>
+            </header>
+
+            <section id="dashboard-content" class="content-section active">
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h3>Total Properties</h3>
+                        <p id="total-properties">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Agents</h3>
+                        <p id="total-agents">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Clients</h3>
+                        <p id="total-clients">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Plots Sold</h3>
+                        <p id="plots-sold">0</p>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Recent Activity</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Activity</th>
+                                <th>User</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-activity-body">
+                            <tr><td colspan="3">No recent activity.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="properties-content" class="content-section">
+                <h3 class="section-title">Manage Properties</h3>
+                <div class="form-container">
+                    <h4>Create New Property</h4>
+                    <form id="create-property-form">
+                        <label for="property-name">Property Name:</label>
+                        <input type="text" id="property-name" required>
+                        <label for="property-location">Location:</label>
+                        <input type="hidden" id="property-location" required>
+                        <div id="create-property-map" style="height: 300px; width: 100%; margin-bottom: 10px;"></div>
+                        <label for="create-property-lat">Latitude:</label>
+                        <input type="text" id="create-property-lat" readonly required>
+                        <label for="create-property-lon">Longitude:</label>
+                        <input type="text" id="create-property-lon" readonly required>
+                        <label for="property-images">Property Images:</label>
+                        <input type="file" id="property-images" accept="image/*" multiple>
+                        <label for="property-plots">Number of Plots:</label>
+                        <input type="number" id="property-plots" min="1" value="50" required>
+                        <label for="plot-price">Default Plot Price:</label>
+                        <input type="number" id="plot-price" min="0" value="100000" required>
+                        <button type="submit">Create Property</button>
+                    </form>
+                </div>
+
+                <div class="form-container" id="edit-property-container" style="display: none;">
+                    <h4>Edit Property</h4>
+                    <form id="edit-property-form">
+                        <input type="hidden" id="edit-property-id">
+                        <label for="edit-property-name">Property Name:</label>
+                        <input type="text" id="edit-property-name" required>
+                        <label for="edit-property-location">Location:</label>
+                        <input type="hidden" id="edit-property-location" required>
+                        <div id="edit-property-map" style="height: 300px; width: 100%; margin-bottom: 10px;"></div>
+                        <label for="edit-property-lat">Latitude:</label>
+                        <input type="text" id="edit-property-lat" readonly required>
+                        <label for="edit-property-lon">Longitude:</label>
+                        <input type="text" id="edit-property-lon" readonly required>
+                        <label for="edit-property-images">Property Images:</label>
+                        <input type="file" id="edit-property-images" accept="image/*" multiple>
+                        <div id="current-property-images"></div>
+                        <label for="edit-property-plots">Number of Plots:</label>
+                        <input type="number" id="edit-property-plots" min="1" required>
+                        <label for="edit-plot-price">Default Plot Price:</label>
+                        <input type="number" id="edit-plot-price" min="0" required>
+                        <button type="submit">Update Property</button>
+                        <button type="button" id="cancel-edit-property">Cancel</button>
+                    </form>
+                </div>
+
+                <h3 class="section-title">Existing Properties</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Total Plots</th>
+                                <th>Available Plots</th>
+                                <th>Default Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="properties-table-body">
+                            <tr><td colspan="6">No properties found.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="agents-content" class="content-section">
+                <h3 class="section-title">Manage Agents</h3>
+                <div class="form-container">
+                    <h4>Create New Agent</h4>
+                    <form id="create-agent-form">
+                        <label for="agent-name">Agent Name:</label>
+                        <input type="text" id="agent-name" required>
+                        <label for="agent-email">Email:</label>
+                        <input type="email" id="agent-email" required>
+                        <label for="agent-password">Password:</label>
+                        <input type="password" id="agent-password" required>
+                        <button type="submit">Create Agent</button>
+                    </form>
+                </div>
+
+                <h3 class="section-title">Existing Agents</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Properties Managed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agents-table-body">
+                            <tr><td colspan="4">No agents found.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="clients-content" class="content-section">
+                <h3 class="section-title">All Clients and Transactions</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Agent</th>
+                                <th>Property</th>
+                                <th>Plot Number</th>
+                                <th>Price</th>
+                                <th>Date Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clients-transactions-table-body">
+                            <tr><td colspan="6">No clients or transactions found.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script> <!-- Firestore SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> <!-- Firebase Storage SDK -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

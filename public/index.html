@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dropdown.css">
+    <link rel="icon" href="img/logo.png" type="image/png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+
+<body>
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <img src="img/logo.png" alt="Company Logo" class="login-logo">
+            <h2>Admin Login</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit">Login</button>
+                <p class="error-message" id="login-error-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="dashboard-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="img/logo.png" alt="Company Logo" class="dashboard-logo">
+                <h1>Admin Dashboard</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" id="nav-dashboard" class="active">Dashboard</a></li>
+                    <li><a href="#" id="nav-properties">Properties</a></li>
+                    <li><a href="#" id="nav-plots">Plots</a></li>
+                    <li><a href="#" id="nav-agents">Agents</a></li>
+                    <li><a href="#" id="nav-commissions">Commissions</a></li>
+                    <li><a href="#" id="nav-clients">Clients</a></li>
+                    <li><a href="#" id="nav-sliders">Sliders</a></li> <!-- New Sliders menu item -->
+                    <li><a href="#" id="nav-gallery">Gallery/PROPERTIES</a></li> <!-- New Gallery menu item -->
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header>
+                <button id="sidebar-toggle" aria-label="Toggle menu" class="icon-button" title="Toggle menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <h2 id="current-page-title">Dashboard</h2>
+                <div class="user-info">
+                    <span>Admin User</span>
+                    <button id="logout-button">Logout</button>
+                </div>
+            </header>
+
+            <section id="dashboard-content" class="content-section active">
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h3>Total Properties</h3>
+                        <p id="total-properties">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Agents</h3>
+                        <p id="total-agents">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Clients</h3>
+                        <p id="total-clients">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Plots Sold</h3>
+                        <p id="plots-sold">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Commissions</h3>
+                        <p id="total-commissions-to-pay">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Remaining Commissions</h3>
+                        <p id="total-remaining-commissions">0</p>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Analytics</h3>
+                <div class="charts-grid">
+                    <div class="card chart-card">
+                        <h4>Sales (Last 12 Months)</h4>
+                        <canvas id="sales-over-time"></canvas>
+                    </div>
+                    <div class="card chart-card">
+                        <h4>Plots Availability</h4>
+                        <canvas id="plots-availability"></canvas>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Recent Activity</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Activity</th>
+                                <th>User</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-activity-body">
+                            <tr>
+                                <td colspan="3">No recent activity.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="properties-content" class="content-section">
+                <h3 class="section-title">Manage Properties</h3>
+                <button id="add-property-button" class="action-button">Add New Property</button>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Total Plots</th>
+                                <th>Available Plots</th>
+                                <th>Default Price</th>
+                                <th>Images</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="properties-table-body">
+                            <tr>
+                                <td colspan="7">No properties found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="plots-content" class="content-section">
+                <h3 class="section-title">Manage Plots</h3>
+                <div class="form-group">
+                    <label for="select-property-for-plots">Select Property:</label>
+                    <select id="select-property-for-plots" required>
+                        <option value="">Select a property to manage plots</option>
+                    </select>
+                </div>
+                <div id="plots-management-area" style="display: none;">
+                    <button id="add-plot-button" class="action-button">Add New Plot</button>
+                    <div class="data-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Plot Number</th>
+                                    <th>Price</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="plots-table-body">
+                                <tr>
+                                    <td colspan="5">No plots found for this property.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="agents-content" class="content-section">
+                <h3 class="section-title">Manage Agents</h3>
+                <div class="form-container">
+                    <h4>Create New Agent</h4>
+                    <form id="create-agent-form">
+                        <label for="agent-name">Agent Name:</label>
+                        <input type="text" id="agent-name" required>
+                        <label for="agent-email">Email:</label>
+                        <input type="email" id="agent-email" required>
+                        <label for="agent-phone">Phone Number:</label>
+                        <input type="tel" id="agent-phone" required>
+                        <label for="agent-password">Password:</label>
+                        <input type="password" id="agent-password" required>
+                        <button type="submit">Create Agent</button>
+                    </form>
+                </div>
+
+                <h3 class="section-title">Existing Agents</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Properties Managed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agents-table-body">
+                            <tr>
+                                <td colspan="5">No agents found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="clients-content" class="content-section">
+                <h3 class="section-title">Manage Clients</h3>
+
+                <!-- Clients Directory -->
+                <div class="clients-directory-section" style="margin-bottom: 40px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4>Clients Directory</h4>
+                        <button id="add-client-button" class="action-button">Add New Client</button>
+                    </div>
+                    <div class="data-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Added Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-directory-table-body">
+                                <tr>
+                                    <td colspan="4">No clients found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Transactions Log -->
+                <h3 class="section-title">Sales / Transactions History</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Agent</th>
+                                <th>Property</th>
+                                <th>Plot Number</th>
+                                <th>Price</th>
+                                <th>Date Sold</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clients-transactions-table-body">
+                            <tr>
+                                <td colspan="7">No clients or transactions found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Create Client Modal -->
+            <div id="create-client-modal" class="modal">
+                <div class="modal-content" style="max-width: 900px;">
+                    <span class="close-button">&times;</span>
+                    <h4>Add New Client & Record Sale</h4>
+                    <form id="create-client-form">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <!-- Column 1: Personal Details -->
+                            <div>
+                                <h5 style="color: var(--primary-color); margin-bottom: 10px;">Client Personal Details
+                                </h5>
+                                <div class="form-group">
+                                    <label for="client-name">Name:</label>
+                                    <input type="text" id="client-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="client-phone">Phone:</label>
+                                    <input type="tel" id="client-phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="client-email">Email (Login ID):</label>
+                                    <input type="email" id="client-email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="client-password">Password:</label>
+                                    <input type="password" id="client-password" required minlength="6">
+                                </div>
+                                <div class="form-group">
+                                    <label for="client-address">Address:</label>
+                                    <textarea id="client-address" rows="2" required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Column 2: Sale Details -->
+                            <div>
+                                <h5 style="color: var(--primary-color); margin-bottom: 10px;">Property & Sale Details
+                                </h5>
+                                <div class="form-group">
+                                    <label for="client-select-agent">Assign Agent:</label>
+                                    <select id="client-select-agent" required>
+                                        <option value="">Loading agents...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="client-select-property">Select Property:</label>
+                                    <select id="client-select-property" required>
+                                        <option value="">Loading properties...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="client-select-plot">Select Plot:</label>
+                                    <select id="client-select-plot" required disabled>
+                                        <option value="">Select Property First</option>
+                                    </select>
+                                    <small id="plot-price-display"
+                                        style="color: green; font-weight: bold; margin-top: 5px; display: block;"></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="client-purchase-date">Purchase Date:</label>
+                                    <input type="date" id="client-purchase-date" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Details Row -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                            <div class="form-group">
+                                <label for="client-total-amount">Total Payment (₹):</label>
+                                <input type="number" id="client-total-amount" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="client-advance-amount">Advance Payment (₹):</label>
+                                <input type="number" id="client-advance-amount" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="action-button" style="width: 100%; margin-top: 20px;">Create Client
+                            & Record Sale</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Transaction Details Modal -->
+            <div id="transaction-details-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h4>Transaction Details</h4>
+                    <div id="transaction-details-content" style="line-height: 1.6;">
+                        <!-- Details will be populated here -->
+                    </div>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button type="button" class="action-button"
+                            onclick="document.getElementById('transaction-details-modal').style.display='none'">Close</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Edit Client Modal -->
+            <div id="edit-client-modal" class="modal">
+                <div class="modal-content" style="max-width: 500px;">
+                    <span class="close-button">&times;</span>
+                    <h4>Edit Client Details</h4>
+                    <form id="edit-client-form">
+                        <input type="hidden" id="edit-client-id">
+                        <div class="form-group">
+                            <label for="edit-client-name">Name:</label>
+                            <input type="text" id="edit-client-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-client-phone">Phone:</label>
+                            <input type="tel" id="edit-client-phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-client-email">Email:</label>
+                            <input type="email" id="edit-client-email" required readonly
+                                style="background-color: #f0f0f0;">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-client-address">Address:</label>
+                            <textarea id="edit-client-address" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="action-button" style="width: 100%; margin-top: 10px;">Update
+                            Client</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- New Sliders Content Section -->
+
+            <section id="sliders-content" class="content-section">
+                <h3 class="section-title">Manage Sliders</h3>
+                <button id="add-slider-button" class="action-button">Add New Slider</button>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sliders-table-body">
+                            <tr>
+                                <td colspan="4">No sliders found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Commissions Content Section -->
+            <section id="commissions-content" class="content-section">
+                <h3 class="section-title">Manage Commissions</h3>
+                <div class="form-container">
+                    <h4>Manage Commission for Sale</h4>
+                    <form id="manage-commission-form">
+                        <div class="form-group">
+                            <label for="commission-agent">Select Agent:</label>
+                            <select id="commission-agent" required>
+                                <option value="">Select an agent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="commission-property">Select Property:</label>
+                            <select id="commission-property" required disabled>
+                                <option value="">Select a property</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="commission-plot">Select Plot:</label>
+                            <div class="custom-dropdown" id="commission-plot-dropdown">
+                                <button type="button" class="dropdown-toggle" id="commission-plot-toggle" disabled>
+                                    Select plots...
+                                </button>
+                                <div class="dropdown-menu" id="commission-plot-menu">
+                                    <div class="dropdown-list" id="commission-plot-list">
+                                        <div class="dropdown-item no-items">No plots available</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="commission-plot" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="total-commission-amount">Total Commission Amount:</label>
+                            <input type="number" id="total-commission-amount" min="0" required>
+                        </div>
+                        <button type="submit" class="action-button">Save Commission Details</button>
+                    </form>
+                </div>
+
+                <h3 class="section-title">Commission Payment History</h3>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent Name</th>
+                                <th>Property</th>
+                                <th>Plot</th>
+                                <th>Total Commission</th>
+                                <th>Paid Amount</th>
+                                <th>Remaining Amount</th>
+                                <th>Last Payment Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="commissions-table-body">
+                            <tr>
+                                <td colspan="8">No commissions found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="payment-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-button">&times;</span>
+                        <h4>Record Payment for Commission</h4>
+                        <form id="record-payment-form">
+                            <input type="hidden" id="payment-commission-id">
+                            <div class="form-group">
+                                <label for="payment-agent-name">Agent:</label>
+                                <input type="text" id="payment-agent-name" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment-property-name">Property:</label>
+                                <input type="text" id="payment-property-name" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment-plot-number">Plot:</label>
+                                <input type="text" id="payment-plot-number" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment-total-commission">Total Commission:</label>
+                                <input type="number" id="payment-total-commission" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment-paid-amount">Already Paid:</label>
+                                <input type="number" id="payment-paid-amount" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment-remaining-amount">Remaining:</label>
+                                <input type="number" id="payment-remaining-amount" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment-amount-to-pay">Amount to Pay Now:</label>
+                                <input type="number" id="payment-amount-to-pay" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment-date">Payment Date:</label>
+                                <input type="date" id="payment-date" required>
+                            </div>
+                            <button type="submit" class="action-button">Record Payment</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="payment-history-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-button">&times;</span>
+                        <h4>Payment History for Commission</h4>
+                        <p><strong>Agent:</strong> <span id="history-agent-name"></span></p>
+                        <p><strong>Property:</strong> <span id="history-property-name"></span></p>
+                        <p><strong>Plot:</strong> <span id="history-plot-number"></span></p>
+                        <p><strong>Total Commission:</strong> <span id="history-total-commission"></span></p>
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Amount Paid</th>
+                                        <th>Payment Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payment-history-table-body">
+                                    <tr>
+                                        <td colspan="2">No payments recorded.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="update-commission-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-button">&times;</span>
+                        <h4>Add New Plot/Commission to Existing Agent</h4>
+                        <form id="update-commission-form">
+                            <input type="hidden" id="update-commission-id">
+                            <input type="hidden" id="update-commission-property-id">
+
+                            <div class="form-group">
+                                <label>Agent:</label>
+                                <input type="text" id="update-commission-agent-name" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Property:</label>
+                                <input type="text" id="update-commission-property-name" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Current Plots:</label>
+                                <input type="text" id="update-commission-current-plots" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="update-commission-plot">Select New Plots to Add:</label>
+                                <div class="custom-dropdown" id="update-commission-plot-dropdown">
+                                    <button type="button" class="dropdown-toggle" id="update-commission-plot-toggle">
+                                        Select plots...
+                                    </button>
+                                    <div class="dropdown-menu" id="update-commission-plot-menu">
+                                        <div class="dropdown-list" id="update-commission-plot-list">
+                                            <div class="dropdown-item no-items">Loading plots...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="update-commission-amount">Additional Commission Amount:</label>
+                                <input type="number" id="update-commission-amount" min="0" required>
+                            </div>
+
+                            <button type="submit" class="action-button">Update Commission</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Gallery Content Section -->
+            <section id="gallery-content" class="content-section">
+                <h3 class="section-title">Manage Gallery / PROPERTIES</h3>
+                <button id="add-gallery-item-button" class="action-button">Add New Gallery Item</button>
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gallery-table-body">
+                            <tr>
+                                <td colspan="4">No gallery items found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script> <!-- Firestore SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> <!-- Firebase Storage SDK -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div id="property-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="create-property-section">
+                <h4>Create New Property</h4>
+                <form id="create-property-form">
+                    <div class="form-group">
+                        <label for="property-name">Property Name:</label>
+                        <input type="text" id="property-name" placeholder="Enter property name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location:</label>
+                        <div class="location-search">
+                            <input type="text" id="create-location-query" placeholder="Search place or address">
+                            <button type="button" id="create-location-search">Search</button>
+                        </div>
+                        <div id="create-location-suggestions" class="autocomplete-suggestions"></div>
+                        <input type="hidden" id="property-location" required>
+                    </div>
+
+                    <div class="form-group" style="margin: 20px 0;">
+                        <label>Map Location (Click to set):</label>
+                        <div id="create-property-map"
+                            style="height: 300px; width: 100%; margin-bottom: 10px; border-radius: 8px;"></div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="create-property-lat">Latitude:</label>
+                            <input type="text" id="create-property-lat" readonly required placeholder="Click on map">
+                        </div>
+                        <div class="form-group">
+                            <label for="create-property-lon">Longitude:</label>
+                            <input type="text" id="create-property-lon" readonly required placeholder="Click on map">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="property-plots">Number of Plots:</label>
+                            <input type="number" id="property-plots" min="1" value="50" required placeholder="e.g., 50">
+                        </div>
+                        <div class="form-group">
+                            <label for="plot-price">Default Plot Price:</label>
+                            <input type="number" id="plot-price" min="0" value="100000" required
+                                placeholder="e.g., 100000">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="property-images">Property Images:</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="property-images" accept="image/*" multiple>
+                        </div>
+                        <div class="preview-grid" id="property-images-preview"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="property-pdf">Property PDF (Brochure):</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="property-pdf" accept="application/pdf">
+                        </div>
+                        <div id="property-pdf-preview" style="margin-top: 10px;"></div>
+                    </div>
+
+                    <button type="submit" class="action-button"
+                        style="width: 100%; padding: 12px; font-size: 1em; margin-top: 20px;">Create Property</button>
+                </form>
+            </div>
+
+            <div id="edit-property-section" style="display: none;">
+                <h4>Edit Property</h4>
+                <form id="edit-property-form">
+                    <input type="hidden" id="edit-property-id">
+                    <label for="edit-property-name">Property Name:</label>
+                    <input type="text" id="edit-property-name" required>
+                    <label for="edit-property-location">Location:</label>
+                    <input type="hidden" id="edit-property-location" required>
+                    <div class="location-search">
+                        <input type="text" id="edit-location-query" placeholder="Search place or address">
+                        <button type="button" id="edit-location-search">Search</button>
+                    </div>
+                    <div id="edit-location-suggestions" class="autocomplete-suggestions"></div>
+                    <div id="edit-property-map" style="height: 300px; width: 100%; margin-bottom: 10px;"></div>
+                    <label for="edit-property-lat">Latitude:</label>
+                    <input type="text" id="edit-property-lat" readonly required>
+                    <label for="edit-property-lon">Longitude:</label>
+                    <input type="text" id="edit-property-lon" readonly required>
+                    <label for="edit-property-images">Add New Property Images:</label>
+                    <input type="file" id="edit-property-images" accept="image/*" multiple>
+                    <label>Current Images (check to remove):</label>
+                    <div id="current-property-images" class="current-images-preview"></div>
+                    <label for="edit-property-pdf">Replace Property PDF:</label>
+                    <input type="file" id="edit-property-pdf" accept="application/pdf">
+                    <label>Current PDF:</label>
+                    <div id="current-property-pdf" class="current-images-preview"></div>
+                    <label for="edit-property-plots">Number of Plots:</label>
+                    <input type="number" id="edit-property-plots" min="1" required>
+                    <label for="edit-property-plot-price">Default Plot Price:</label>
+                    <input type="number" id="edit-property-plot-price" min="0" required>
+                    <button type="submit">Update Property</button>
+                    <button type="button" id="cancel-edit-property">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Slider Modal -->
+    <div id="slider-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="create-slider-section">
+                <h4>Create New Slider</h4>
+                <form id="create-slider-form">
+                    <div class="form-group">
+                        <label for="slider-title">Title:</label>
+                        <input type="text" id="slider-title" placeholder="Enter slider title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slider-description">Description:</label>
+                        <textarea id="slider-description" placeholder="Enter description"
+                            style="min-height: 80px; resize: vertical;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slider-image">Slider Image:</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="slider-image" accept="image/*" required>
+                        </div>
+                        <div id="slider-image-preview" class="preview-grid" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slider-link">Link (Optional):</label>
+                        <input type="url" id="slider-link" placeholder="https://example.com">
+                    </div>
+
+                    <button type="submit" class="action-button"
+                        style="width: 100%; padding: 12px; font-size: 1em; margin-top: 20px;">Create Slider</button>
+                </form>
+            </div>
+
+            <div id="edit-slider-section" style="display: none;">
+                <h4>Edit Slider</h4>
+                <form id="edit-slider-form">
+                    <input type="hidden" id="edit-slider-id">
+
+                    <div class="form-group">
+                        <label for="edit-slider-title">Title:</label>
+                        <input type="text" id="edit-slider-title" placeholder="Enter slider title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-slider-description">Description:</label>
+                        <textarea id="edit-slider-description" placeholder="Enter description"
+                            style="min-height: 80px; resize: vertical;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Current Image:</label>
+                        <div id="current-slider-image" class="current-images-preview"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-slider-image">Replace Image:</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="edit-slider-image" accept="image/*">
+                        </div>
+                        <div id="edit-slider-image-preview" class="preview-grid" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-slider-link">Link (Optional):</label>
+                        <input type="url" id="edit-slider-link" placeholder="https://example.com">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="action-button" style="flex: 1; padding: 12px;">Update
+                            Slider</button>
+                        <button type="button" id="cancel-edit-slider" class="action-button"
+                            style="flex: 1; padding: 12px; background-color: #6b7280;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Gallery Modal -->
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="create-gallery-item-section">
+                <h4>Add New Gallery Item</h4>
+                <form id="create-gallery-item-form">
+                    <div class="form-group">
+                        <label for="gallery-item-title">Title:</label>
+                        <input type="text" id="gallery-item-title" placeholder="Enter gallery title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gallery-item-description">Description:</label>
+                        <textarea id="gallery-item-description" placeholder="Enter description"
+                            style="min-height: 80px; resize: vertical;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gallery-item-image">Gallery Image:</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="gallery-item-image" accept="image/*" required>
+                        </div>
+                        <div id="gallery-item-image-preview" class="preview-grid" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gallery-item-link">Link (Optional):</label>
+                        <input type="url" id="gallery-item-link" placeholder="https://example.com">
+                    </div>
+
+                    <button type="submit" class="action-button"
+                        style="width: 100%; padding: 12px; font-size: 1em; margin-top: 20px;">Add Gallery Item</button>
+                </form>
+            </div>
+
+            <div id="edit-gallery-item-section" style="display: none;">
+                <h4>Edit Gallery Item</h4>
+                <form id="edit-gallery-item-form">
+                    <input type="hidden" id="edit-gallery-item-id">
+
+                    <div class="form-group">
+                        <label for="edit-gallery-item-title">Title:</label>
+                        <input type="text" id="edit-gallery-item-title" placeholder="Enter gallery title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-gallery-item-description">Description:</label>
+                        <textarea id="edit-gallery-item-description" placeholder="Enter description"
+                            style="min-height: 80px; resize: vertical;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Current Image:</label>
+                        <div id="current-gallery-item-image" class="current-images-preview"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-gallery-item-image">Replace Image:</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="edit-gallery-item-image" accept="image/*">
+                        </div>
+                        <div id="edit-gallery-item-image-preview" class="preview-grid" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-gallery-item-link">Link (Optional):</label>
+                        <input type="url" id="edit-gallery-item-link" placeholder="https://example.com">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="action-button" style="flex: 1; padding: 12px;">Update Gallery
+                            Item</button>
+                        <button type="button" id="cancel-edit-gallery-item" class="action-button"
+                            style="flex: 1; padding: 12px; background-color: #6b7280;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plot Modals -->
+    <div id="plot-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="create-plot-section">
+                <h4>Add New Plot</h4>
+                <form id="create-plot-form">
+                    <input type="hidden" id="create-plot-property-id">
+                    <div class="form-group">
+                        <label for="create-plot-number">Plot Number:</label>
+                        <input type="text" id="create-plot-number" placeholder="e.g., A1, 101" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="create-plot-price">Price:</label>
+                        <input type="number" id="create-plot-price" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Plot Type:</label>
+                        <div class="plot-type-options">
+                            <label><input type="checkbox" name="plot-type" value="Commercial"> Commercial</label>
+                            <label><input type="checkbox" name="plot-type" value="Premium"> Premium</label>
+                            <label><input type="checkbox" name="plot-type" value="Corner"> Corner</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="action-button">Add Plot</button>
+                </form>
+            </div>
+
+            <div id="edit-plot-section" style="display: none;">
+                <h4>Edit Plot</h4>
+                <form id="edit-plot-form">
+                    <input type="hidden" id="edit-plot-id">
+                    <input type="hidden" id="edit-plot-property-id">
+                    <div class="form-group">
+                        <label for="edit-plot-number">Plot Number:</label>
+                        <input type="text" id="edit-plot-number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-plot-price">Price:</label>
+                        <input type="number" id="edit-plot-price" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Plot Type:</label>
+                        <div class="plot-type-options">
+                            <label><input type="checkbox" name="edit-plot-type" value="Commercial"
+                                    id="edit-plot-type-commercial"> Commercial</label>
+                            <label><input type="checkbox" name="edit-plot-type" value="Premium"
+                                    id="edit-plot-type-premium"> Premium</label>
+                            <label><input type="checkbox" name="edit-plot-type" value="Corner"
+                                    id="edit-plot-type-corner"> Corner</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="action-button">Update Plot</button>
+                    <button type="button" id="cancel-edit-plot" class="action-button secondary-button">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="large-spinner"></div>
+            <h3 id="loading-text">Processing...</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p class="progress-text" id="progress-text"></p>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>
