@@ -1,5 +1,7 @@
-# The following line is added by the Flutter tool.
-require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), File.join(File.dirname(__FILE__), '..', '..'))
+# Use FLUTTER_ROOT to locate the podhelper.rb script.
+# This ensures compatibility with build servers like Codemagic.
+flutter_root = ENV['FLUTTER_ROOT'] || File.join('..', '..', '..')
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
 prepare_command 'ruby -e "require \'fileutils\'; FileUtils.touch(\'Flutter/Generated.xcconfig\')"'
 
