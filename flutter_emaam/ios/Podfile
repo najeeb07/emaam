@@ -1,20 +1,9 @@
-# Uncomment this line to define a global platform for your project
+# The following line is added by the Flutter tool.
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), File.join(File.dirname(__FILE__), '..', '..'))
+
+prepare_command 'ruby -e "require \'fileutils\'; FileUtils.touch(\'Flutter/Generated.xcconfig\')"'
+
 platform :ios, '15.0'
-
-# CocoaPods analytics sends network stats synchronously affecting build performance.
-ENV['COCOAPODS_DISABLE_STATS'] = '1'
-
-project 'Runner', {
-  'Debug' => :debug,
-  'Release' => :release,
-  'Profile' => :profile,
-}
-
-def flutter_install_all_ios_pods(main_target_directory)
-  return unless File.exist?(File.join(main_target_directory, 'Generated.xcconfig'))
-  helper_dir = File.expand_path(File.join('..', '..', '..', 'packages', 'flutter_tools', 'bin'), __FILE__)
-  system('ruby', File.join(helper_dir, 'patch_xcconfig.rb'), '--xcconfig-path', File.join(main_target_directory, 'Generated.xcconfig'))
-end
 
 target 'Runner' do
   use_frameworks!
