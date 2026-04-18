@@ -4,6 +4,8 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     working_directory: flutter_emaam
+    integrations:
+      app_store_connect: Codemagic # This assumes you named your integration "Codemagic" or have only one.
     environment:
       flutter: stable
       xcode: latest
